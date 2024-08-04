@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './index.scss';
 import { Collection } from './Collection';
 function App() {
-  const [categoryID, setCategoryID] = useState(0)
+  const [categoryID, setCategoryID] = useState(0);
   const [collections, setCollections] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const cats = [
@@ -12,10 +12,13 @@ function App() {
     { "name": "Архитектура" },
     { "name": "Города" }
   ]
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1)
   useEffect(() => {
     setIsLoading(true)
-    fetch(`https://66af9104b05db47acc5a329d.mockapi.io/Photo-collections?${categoryID ? `category=${categoryID}` : "" }`)
+    const category = categoryID ? `category=${categoryID}` : "";
+    
+    fetch(`https://66af9104b05db47acc5a329d.mockapi.io/Photo-collections?page=${page}&limit=3&${category}`)
     .then((res) => res.json())
     .then((json) => {
       setCollections(json)
@@ -24,7 +27,7 @@ function App() {
       console.warn(err);
       alert("Ошибка при получении данных")
     }).finally(() => setIsLoading(false))
-  },[categoryID])
+  },[categoryID, page])
   return (
     <div className="App">
       <h1>Моя коллекция фотографий</h1>
@@ -47,9 +50,9 @@ function App() {
        
       </div>
       <ul className="pagination">
-        <li>1</li>
-        <li className="active">2</li>
-        <li>3</li>
+      {[...Array(3)].map((_, i) => (
+        <li onClick={() => setPage(i+1)} key={i} className={page === i+1 ? "active" : ""}>{i+1}</li>
+      ))}
       </ul>
     </div>
   );
